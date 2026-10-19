@@ -1,0 +1,9 @@
+Kode US,Di luar PRD ?,Kode AC,Test Case ID,Platform,Title (Test Case),Precondition,Category,Priority,Test Data,Steps,Expected Result,Automated ?
+Membuka halaman awal impor,false,Masuk ke halaman impor,TC-Membuka halaman awal impor-4620,"Desktop Web, Mobile Web",User berhasil membuka halaman import kontak,"* login sebagai Owner Perusahaan
+* buka halaman daftar kontak aktif",Positive,High,,"1. Klik tombol ""Ekspor/Impor""
+2. Pilih aksi impor","Sistem menampilkan halaman Import Kontak dengan step Upload File aktif dan button ""Batal"" enable",Will Automate
+Impor kontak dari file,false,Validasi file impor,TC-Impor kontak file valid-4621,Desktop Web,Impor kontak dari file XLSX yang valid,"* sudah berada di halaman Import Kontak",Positive,High,contact.xlsx,"1. Upload file contact.xlsx
+2. Klik ""Cek Data""
+3. Klik ""Impor""","Sistem menampilkan pesan sukses dan kontak masuk ke daftar",Will Automate
+Impor kontak dari file,true,Validasi file impor,TC-Impor kontak file kosong-4622,Desktop Web,Impor ditolak saat file tidak punya baris data,"* sudah berada di halaman Import Kontak",Negative,Medium,empty.xlsx,"1. Upload file empty.xlsx
+2. Klik ""Cek Data""","Sistem menampilkan error ""File tidak memiliki data""",Manual
