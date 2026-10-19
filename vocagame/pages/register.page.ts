@@ -10,34 +10,35 @@ import { BasePage } from './base.page';
 
 export class RegisterPage extends BasePage {
   // --- LOCATOR ---
-  readonly firstNameInput: Locator = this.page.locator('input[name="first_name"]');
-  readonly lastNameInput: Locator = this.page.locator('input[name="last_name"]');
-  readonly phoneInput: Locator = this.page.locator('input[name="phone_number"]');
-  readonly emailInput: Locator = this.page.locator('input[name="email"]');
-  readonly passwordInput: Locator = this.page.locator('input[name="password"]');
-  readonly confirmPasswordInput: Locator = this.page.locator('input[name="confirm_password"]');
-  readonly tncCheckbox: Locator = this.page.locator('button[role="checkbox"]').first();
-  readonly submitButton: Locator = this.page.locator('button[type="submit"]').first();
+  readonly firstNameInput: Locator = this.loc('input[name="first_name"]');
+  readonly lastNameInput: Locator = this.loc('input[name="last_name"]');
+  readonly phoneInput: Locator = this.loc('input[name="phone_number"]');
+  readonly emailInput: Locator = this.loc('input[name="email"]');
+  readonly passwordInput: Locator = this.loc('input[name="password"]');
+  readonly confirmPasswordInput: Locator = this.loc('input[name="confirm_password"]');
+  readonly tncCheckbox: Locator = this.loc('button[role="checkbox"]');
+  readonly submitButton: Locator = this.loc('button[type="submit"]');
 
   // Popup OTP
   readonly sendOtpButton: Locator = this.page
     .locator('p', { hasText: 'Kirim OTP via Email' })
+    .filter({ visible: true })
     .first();
   // XPath asli: //div[@role='dialog']//button[3]
-  readonly continueOtpButton: Locator = this.page.locator(
-    'xpath=//div[@role="dialog"]//button[3]',
-  );
-  readonly verifyOtpButton: Locator = this.page.getByRole('button', {
-    name: 'Verifikasi',
-    exact: true,
-  });
-  readonly otpInput: Locator = this.page.locator('div[data-input-otp-container] input').first();
+  readonly continueOtpButton: Locator = this.loc('xpath=//div[@role="dialog"]//button[3]');
+  readonly verifyOtpButton: Locator = this.page
+    .getByRole('button', { name: 'Verifikasi', exact: true })
+    .filter({ visible: true })
+    .first();
+  readonly otpInput: Locator = this.loc('div[data-input-otp-container] input');
 
-  readonly errorToast: Locator = this.page.locator('li[role="status"] > div:nth-of-type(2)').first();
+  readonly errorToast: Locator = this.loc('li[role="status"] [data-title]');
 
   // --- ACTION ---
   async open(): Promise<void> {
     await this.openUrl(config.registerUrl);
+    // Penting: tunggu React selesai hidrasi, kalau tidak isian kita dihapus.
+    await this.waitForHydration('input[name="first_name"]');
   }
 
   async registerNewUser(
@@ -85,12 +86,7 @@ export class RegisterPage extends BasePage {
 
   /** Tunggu toast error (maks 5 detik) lalu kembalikan teksnya. */
   async getErrorMessage(): Promise<string | null> {
-    try {
-      await this.errorToast.waitFor({ state: 'visible', timeout: 5_000 });
-      return await this.getText(this.errorToast);
-    } catch {
-      return null;
-    }
+    return this.waitForToast(this.errorToast);
   }
 
   async isSubmitButtonEnabled(): Promise<boolean> {

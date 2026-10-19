@@ -11,17 +11,21 @@ import { BasePage } from './base.page';
 export class LoginPage extends BasePage {
   // --- LOCATOR ---
   // XPath asli: //input[@name='identifier']
-  readonly usernameInput: Locator = this.page.locator('input[name="identifier"]');
+  readonly usernameInput: Locator = this.loc('input[name="identifier"]');
   // XPath asli: //input[@type='password']
-  readonly passwordInput: Locator = this.page.locator('input[type="password"]');
+  readonly passwordInput: Locator = this.loc('input[type="password"]');
   // XPath asli: //button[@type='submit']
-  readonly submitButton: Locator = this.page.locator('button[type="submit"]');
+  readonly submitButton: Locator = this.loc('button[type="submit"]');
   // XPath asli: //li[@role='status']/div[2]
-  readonly errorToast: Locator = this.page.locator('li[role="status"] > div:nth-of-type(2)');
+  // Di Playwright dipakai atribut milik library toast (sonner) supaya tidak
+  // bergantung pada urutan <div> — lebih tahan perubahan tampilan.
+  readonly errorToast: Locator = this.loc('li[role="status"] [data-title]');
 
   // --- ACTION ---
   async open(): Promise<void> {
     await this.openUrl(config.loginUrl);
+    // Penting: tunggu React selesai hidrasi, kalau tidak isian kita dihapus.
+    await this.waitForHydration('input[name="identifier"]');
   }
 
   async loginUser(username: string, password: string): Promise<void> {
@@ -32,9 +36,6 @@ export class LoginPage extends BasePage {
   }
 
   async getErrorMessage(): Promise<string | null> {
-    if (await this.isVisible(this.errorToast)) {
-      return this.getText(this.errorToast);
-    }
-    return null;
+    return this.waitForToast(this.errorToast);
   }
 }

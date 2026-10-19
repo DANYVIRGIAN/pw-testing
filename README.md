@@ -25,6 +25,23 @@ ke stack modern.
 Rincian lengkap tiap test case (precondition, langkah, hasil yang diharapkan) ada di
 [`vocagame/vocagame-testcases.csv`](./vocagame/vocagame-testcases.csv).
 
+---
+
+## ⚠️ Penting: test ini menembak produksi
+
+Semua test berjalan langsung ke **vocagame.com**, bukan server staging. Konsekuensinya:
+
+- **Ada proteksi anti-bot.** Beberapa percobaan login berturut-turut akan memicu balasan
+  *"Kami mendeteksi aktivitas yang tidak biasa di akun Anda. Demi keamanan, akses sementara dibatasi."*
+  Bila itu muncul, test login akan gagal bukan karena bug — tunggu beberapa menit lalu jalankan lagi.
+  **Jangan** pakai `--repeat-each` untuk test login.
+- **Test membuat data nyata.** `TC-VOCA-REG-001` membuat akun asli, `TC-VOCA-ORDER-001` membuat
+  pesanan asli.
+- **`TC-VOCA-FP-001` mengganti password akun** `nuitrooo@yopmail.com` menjadi `PasswordBaru123!`.
+  Jalankan test ini hanya kalau memang disengaja.
+- Untuk demo, `TC-VOCA-REG-003` (tombol submit nonaktif saat email kosong) adalah yang paling aman —
+  tidak mengirim data apa pun ke server.
+
 ## ✨ Yang ditonjolkan
 
 - **Page Object Model** — pemisahan locator & aksi (`vocagame/pages/`) dari skenario (`vocagame/specs/`)
@@ -32,6 +49,7 @@ Rincian lengkap tiap test case (precondition, langkah, hasil yang diharapkan) ad
 - **Data uji dinamis** — email berbasis timestamp & nomor HP acak, agar tiap run tidak bentrok
 - **Kredensial lewat environment variable** — tidak ada akun tertulis di dalam kode
 - **Auto-waiting Playwright** — menggantikan `WebDriverWait` + `time.sleep()` di versi Selenium
+- **Anti-flaky** — menunggu hidrasi React & menunggu toast benar-benar tampil, bukan `sleep`
 
 ## 🗂️ Struktur
 
@@ -103,9 +121,11 @@ VOCA_LOGIN_EMAIL=akun@kamu.com VOCA_PASSWORD=Rahasia123! npm test
 | Aspek | Python / Selenium | Playwright |
 |---|---|---|
 | Mencari elemen | `driver.find_element(By.XPATH, ...)` | `page.locator(...)` |
-| Menunggu | `WebDriverWait` + `time.sleep()` | auto-waiting bawaan |
+| Elemen kembar (layout desktop + mobile) | `find_element` diam-diam ambil yang pertama; kalau salah, perlu loop `is_displayed()` | `loc()` di `BasePage` — saring `:visible` lalu ambil yang pertama. Playwright melempar *strict mode violation* bila satu locator cocok ke banyak elemen |
+| Menunggu elemen | `WebDriverWait` + `time.sleep()` | auto-waiting bawaan |
+| Menunggu SPA siap (hidrasi) | `time.sleep()` besar, tetap rawan flaky | `waitForHydration()` — tunggu properti `__reactFiber$` muncul, penanda React sudah aktif |
+| Menunggu pesan toast | `time.sleep()` lalu baca elemen | `waitForToast()` — tunggu toast terlihat, baru dibaca |
 | Klik terhalang elemen lain | fallback `execute_script("arguments[0].click()")` | `scrollIntoViewIfNeeded()` + `click()` |
-| Elemen responsif (desktop/mobile) | loop cari elemen `is_displayed()` | pseudo-class `:visible` |
 | Buka tab baru | `driver.switch_to.new_window('tab')` | `context.newPage()` |
 | Masuk iframe email | `switch_to.frame("ifmail")` | `frameLocator('#ifmail')` |
 | Fixture browser | `conftest.py` (`@pytest.fixture`) | fixture bawaan `{ page }` |

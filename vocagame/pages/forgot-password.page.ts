@@ -10,30 +10,33 @@ import { BasePage } from './base.page';
 
 export class ForgotPasswordPage extends BasePage {
   // --- LOCATOR ---
-  readonly emailInput: Locator = this.page.locator('input[name="identifier"]');
-  readonly submitRequestButton: Locator = this.page.locator('button[type="submit"]').first();
+  readonly emailInput: Locator = this.loc('input[name="identifier"]');
+  readonly submitRequestButton: Locator = this.loc('button[type="submit"]');
 
   // Popup & OTP
-  readonly sendOtpButton: Locator = this.page.getByText('Kirim OTP via Email').first();
+  readonly sendOtpButton: Locator = this.page
+    .getByText('Kirim OTP via Email')
+    .filter({ visible: true })
+    .first();
   // XPath asli: //div[@role='dialog']//button[3]
-  readonly continueOtpButton: Locator = this.page.locator(
-    'xpath=//div[@role="dialog"]//button[3]',
-  );
-  readonly otpInput: Locator = this.page.locator('div[data-input-otp-container] input').first();
-  readonly verifyOtpButton: Locator = this.page.getByRole('button', {
-    name: 'Verifikasi',
-    exact: true,
-  });
+  readonly continueOtpButton: Locator = this.loc('xpath=//div[@role="dialog"]//button[3]');
+  readonly otpInput: Locator = this.loc('div[data-input-otp-container] input');
+  readonly verifyOtpButton: Locator = this.page
+    .getByRole('button', { name: 'Verifikasi', exact: true })
+    .filter({ visible: true })
+    .first();
 
   // Reset password
-  readonly newPasswordInput: Locator = this.page.locator('input[name="password"]');
-  readonly confirmPasswordInput: Locator = this.page.locator('input[name="confirmPassword"]');
-  readonly resetButton: Locator = this.page.locator('button[type="submit"]').first();
-  readonly successToast: Locator = this.page.locator('li[role="status"] > div:nth-of-type(2)').first();
+  readonly newPasswordInput: Locator = this.loc('input[name="password"]');
+  readonly confirmPasswordInput: Locator = this.loc('input[name="confirmPassword"]');
+  readonly resetButton: Locator = this.loc('button[type="submit"]');
+  readonly successToast: Locator = this.loc('li[role="status"] [data-title]');
 
   // --- ACTION ---
   async open(): Promise<void> {
     await this.openUrl(config.forgotPasswordUrl);
+    // Penting: tunggu React selesai hidrasi, kalau tidak isian kita dihapus.
+    await this.waitForHydration('input[name="identifier"]');
   }
 
   async performForgotPassword(email: string, newPass: string): Promise<void> {
@@ -72,11 +75,6 @@ export class ForgotPasswordPage extends BasePage {
   }
 
   async getSuccessMessage(): Promise<string | null> {
-    try {
-      await this.successToast.waitFor({ state: 'visible', timeout: 10_000 });
-      return await this.getText(this.successToast);
-    } catch {
-      return null;
-    }
+    return this.waitForToast(this.successToast);
   }
 }

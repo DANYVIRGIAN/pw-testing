@@ -10,41 +10,39 @@ import { BasePage } from './base.page';
 
 export class OrderPage extends BasePage {
   // --- LOCATOR ---
-  readonly userIdInput: Locator = this.page.locator('input[name="data.user_id"]');
-  readonly emailInput: Locator = this.page.locator('input[name="identifier"]');
+  readonly userIdInput: Locator = this.loc('input[name="data.user_id"]');
+  readonly emailInput: Locator = this.loc('input[name="identifier"]');
 
   // XPath asli: //div[@id='Diamonds']/div[2]/button[1]
-  readonly item5Diamonds: Locator = this.page.locator(
+  readonly item5Diamonds: Locator = this.loc(
     '#Diamonds > div:nth-of-type(2) > button:nth-of-type(1)',
   );
 
   // Di Selenium perlu loop manual pilih tombol yang visible (responsif).
-  // Playwright: cukup pakai pseudo-class :visible.
-  readonly qrisHeader: Locator = this.page
-    .locator('button[data-cy="payment-group-qris"]:visible')
-    .first();
-  readonly qrisSubOption: Locator = this.page
-    .locator('div[data-cy="payment-item-qris"]:visible')
-    .first();
+  // Playwright: cukup pakai filter visible.
+  readonly qrisHeader: Locator = this.loc('button[data-cy="payment-group-qris"]');
+  readonly qrisSubOption: Locator = this.loc('div[data-cy="payment-item-qris"]');
 
   // XPath asli: //button[contains(text(), 'Beli') or contains(text(), 'Buy')]
   readonly buyButton: Locator = this.page
-    .locator('button:visible')
-    .filter({ hasText: /Beli|Buy/ })
+    .locator('button')
+    .filter({ hasText: /Beli|Buy/, visible: true })
     .first();
 
   // XPath asli: //h4[contains(text(), 'Nomor Pesanan')]/following-sibling::div/span
-  readonly orderNumberText: Locator = this.page.locator(
+  readonly orderNumberText: Locator = this.loc(
     'xpath=//h4[contains(text(), "Nomor Pesanan")]/following-sibling::div/span',
   );
   // XPath asli: (//a[contains(@class,'shadow-card-box') and contains(@class,'lg:flex')])[1]
-  readonly latestOrderCard: Locator = this.page.locator(
+  readonly latestOrderCard: Locator = this.loc(
     'xpath=(//a[contains(@class, "shadow-card-box") and contains(@class, "lg:flex")])[1]',
   );
 
   // --- ACTION ---
   async openFreeFire(): Promise<void> {
     await this.openUrl(config.freeFireUrl);
+    // Penting: tunggu React selesai hidrasi, kalau tidak isian kita dihapus.
+    await this.waitForHydration('input[name="data.user_id"]');
   }
 
   async inputOrderData(userId: string, email: string): Promise<void> {
@@ -77,6 +75,7 @@ export class OrderPage extends BasePage {
 
   async goToHistoryAndClickLatest(): Promise<void> {
     await this.openUrl(config.historyUrl);
+    await this.waitForHydration('a[class*="shadow-card-box"]');
     await this.click(this.latestOrderCard);
   }
 }
