@@ -1,17 +1,17 @@
-# VocaGame — Contoh Reverse-Engineering
+# VocaGame — Automation Test (Playwright)
 
-Contoh nyata penggunaan **pw-testing**: mengubah automation **Python + Selenium + Pytest**
-yang sudah ada menjadi **test case CSV** + **Playwright (TypeScript)**.
+Automation E2E untuk [vocagame.com](https://vocagame.com) dalam **TypeScript + Playwright**,
+hasil port dari suite **Python + Selenium + Pytest**.
 
-- Sumber: [DANYVIRGIAN/vocagame-automation-test](https://github.com/DANYVIRGIAN/vocagame-automation-test)
+- Repo asal: [DANYVIRGIAN/vocagame-automation-test](https://github.com/DANYVIRGIAN/vocagame-automation-test)
 - Target uji: [vocagame.com](https://vocagame.com) (top-up game, locale `id-id`)
 
 ---
 
-## 🎯 Kenapa contoh ini ada
+## 🎯 Latar belakang
 
-Repo sumber berisi automation, tapi **test case-nya tersembunyi di dalam kode** — tidak ada
-daftar terpisah, tidak ada ID, tidak ada priorititas. Contoh ini memperlihatkan alurnya:
+Repo asal berisi automation yang berjalan, tapi **test case-nya tersembunyi di dalam kode** —
+tidak ada daftar terpisah, tidak ada ID, tidak ada priorititas. Di sini alurnya dibalik:
 
 ```
 automation Python/Selenium
@@ -29,7 +29,7 @@ specs/vocagame.e2e.spec.ts   ← spec siap jalan (level 2)
 ## 🗂️ Struktur
 
 ```
-examples/vocagame/
+vocagame/
 ├── vocagame-testcases.csv      # LEVEL 1 — hasil reverse-engineer (8 test case)
 ├── generated/                  # LEVEL 1 — output pw-testing (skeleton)
 │   └── vocagame.spec.ts
@@ -81,17 +81,17 @@ examples/vocagame/
 npx playwright install chromium
 
 # 2. jalankan dari root repo
-npx playwright test -c examples/vocagame/playwright.config.ts
+npx playwright test -c vocagame/playwright.config.ts
 
 # atau satu test saja
-npx playwright test -c examples/vocagame/playwright.config.ts -g "LOGIN-001"
+npx playwright test -c vocagame/playwright.config.ts -g "LOGIN-001"
 ```
 
 ### Regenerate skeleton dari CSV
 
 ```bash
-npm run gen -- examples/vocagame/vocagame-testcases.csv \
-  -o examples/vocagame/generated -n vocagame.spec.ts
+npm run gen -- vocagame/vocagame-testcases.csv \
+  -o vocagame/generated -n vocagame.spec.ts
 ```
 
 ## ⚙️ Kredensial & konfigurasi
@@ -110,7 +110,7 @@ Contoh:
 
 ```bash
 VOCA_LOGIN_EMAIL=akun@kamu.com VOCA_PASSWORD=Rahasia123! \
-  npx playwright test -c examples/vocagame/playwright.config.ts
+  npx playwright test -c vocagame/playwright.config.ts
 ```
 
 ## ⚠️ Catatan

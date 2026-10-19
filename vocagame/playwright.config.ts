@@ -2,7 +2,7 @@
  * Konfigurasi Playwright khusus project contoh VocaGame.
  *
  * Jalankan dari root repo:
- *   npx playwright test -c examples/vocagame/playwright.config.ts
+ *   npx playwright test -c vocagame/playwright.config.ts
  */
 import { defineConfig, devices } from '@playwright/test';
 

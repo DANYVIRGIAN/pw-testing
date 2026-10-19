@@ -92,12 +92,12 @@ BASE_URL=https://staging.example.com npm run test:e2e
 > langkah Playwright-nya. Ini sengaja: generator menyiapkan kerangka + konteks,
 > kamu fokus ke logika selektor/assertion.
 
-## 🧩 Contoh nyata: reverse-engineer VocaGame
+## 🧩 VocaGame — automation hasil reverse-engineering
 
-Folder [`examples/vocagame/`](./examples/vocagame) memperlihatkan seluruh alurnya pada
-kasus sungguhan: automation **Python + Selenium + Pytest** yang sudah ada dibalik menjadi
-**8 test case CSV**, di-generate jadi skeleton, lalu diisi memakai **Page Object Model**
-di Playwright.
+Folder [`vocagame/`](./vocagame) berisi automation yang sudah berjalan, hasil membalik
+suite **Python + Selenium + Pytest** menjadi **TypeScript + Playwright**: automation lama
+diekstrak jadi **8 test case CSV**, di-generate jadi skeleton, lalu diisi memakai
+**Page Object Model**.
 
 | Bagian | Isi |
 |---|---|
@@ -108,11 +108,11 @@ di Playwright.
 
 ```bash
 npx playwright install chromium
-npx playwright test -c examples/vocagame/playwright.config.ts
+npx playwright test -c vocagame/playwright.config.ts
 ```
 
 Detail lengkap + tabel pemetaan Selenium → Playwright ada di
-[`examples/vocagame/README.md`](./examples/vocagame/README.md).
+[`vocagame/README.md`](./vocagame/README.md).
 
 ## 🛠️ Pengembangan
 
