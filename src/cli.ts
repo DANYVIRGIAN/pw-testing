@@ -10,7 +10,7 @@ interface Options {
   fileName?: string;
 }
 
-const HELP = `test-pw — generate Playwright specs dari CSV test case
+const HELP = `pw-testing — generate Playwright specs dari CSV test case
 
 Usage:
   tcgen <testcase.csv> [options]

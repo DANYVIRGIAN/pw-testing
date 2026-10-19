@@ -1,4 +1,4 @@
-# test-pw
+# pw-testing
 
 > Generate **Playwright** test specs langsung dari file CSV test case QA — mendukung format **UI** dan **API**.
 
@@ -6,7 +6,7 @@
 [![Playwright](https://img.shields.io/badge/playwright-%40playwright%2Ftest-2EAD33)](https://playwright.dev)
 [![TypeScript](https://img.shields.io/badge/typescript-strict-3178C6)](https://www.typescriptlang.org)
 
-`test-pw` membaca CSV test case yang biasa dipakai tim QA (kolom `Test Case ID`,
+`pw-testing` membaca CSV test case yang biasa dipakai tim QA (kolom `Test Case ID`,
 `Steps`, `Expected Result`, `Endpoint`, `Method`, dst.), lalu menghasilkan skeleton
 spec Playwright siap-isi. Tujuannya memangkas pekerjaan berulang: dari ratusan baris
 test case di spreadsheet → file `.spec.ts` terstruktur dalam hitungan detik.
@@ -66,7 +66,7 @@ Setelah `npm run build`, CLI juga tersedia sebagai binary `tcgen`.
 ## 🗂️ Struktur project
 
 ```
-test-pw/
+pw-testing/
 ├── src/
 │   ├── cli.ts         # entry point CLI
 │   ├── csv.ts         # parser CSV (RFC-4180-ish)

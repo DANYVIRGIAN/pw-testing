@@ -1,5 +1,5 @@
 {
-  "name": "test-pw",
+  "name": "pw-testing",
   "version": "0.1.0",
   "private": true,
   "description": "Generate Playwright test specs from QA test-case CSV files (UI & API).",

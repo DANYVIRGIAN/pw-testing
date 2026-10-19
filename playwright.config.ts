@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Config dasar Playwright untuk spec yang di-generate oleh `test-pw`.
+ * Config dasar Playwright untuk spec yang di-generate oleh `pw-testing`.
  * Ubah baseURL lewat env BASE_URL bila perlu.
  */
 export default defineConfig({
