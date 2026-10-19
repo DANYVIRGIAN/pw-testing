@@ -1,0 +1,52 @@
+Kode US,Kode AC,Test Case ID,Platform,Title (Test Case),Precondition,Category,Priority,Test Data,Steps,Expected Result,Automated ?
+Login pengguna,Autentikasi kredensial valid,TC-VOCA-LOGIN-001,Desktop Web,Login berhasil menggunakan email dan password valid,"* Akun sudah terdaftar dengan email valid
+* Berada di halaman login",Positive,High,email: horegonuoihgc@gmail.com | password: Password123!,"1. Buka halaman /id-id/auth/login
+2. Isi kolom email dengan email terdaftar
+3. Klik tombol submit
+4. Isi kolom password dengan password valid
+5. Klik tombol submit","Pengguna keluar dari halaman login (URL tidak memuat ""/login"") dan berhasil masuk ke halaman utama",Will Automate
+Login pengguna,Validasi kredensial salah,TC-VOCA-LOGIN-002,Desktop Web,Login gagal saat password salah,"* Akun sudah terdaftar
+* Berada di halaman login",Negative,High,email: horegonuoihgc@gmail.com | password: PasswordNgawur123!,"1. Buka halaman /id-id/auth/login
+2. Isi kolom email dengan email terdaftar
+3. Klik tombol submit
+4. Isi kolom password dengan password salah
+5. Klik tombol submit","Toast error tampil dan memuat kata ""salah"" atau ""credentials""",Will Automate
+Login pengguna,Validasi akun tidak ditemukan,TC-VOCA-LOGIN-003,Desktop Web,Login gagal saat email tidak terdaftar,"* Email belum pernah didaftarkan
+* Berada di halaman login",Negative,Medium,"email: email dinamis (belum terdaftar) | password: Password123!","1. Buka halaman /id-id/auth/login
+2. Isi kolom email dengan email yang belum terdaftar
+3. Klik tombol submit
+4. Isi kolom password
+5. Klik tombol submit","Toast error tampil dan memuat kata ""tidak ditemukan"" atau ""not found""",Will Automate
+Registrasi pengguna,Verifikasi OTP registrasi,TC-VOCA-REG-001,Desktop Web,Registrasi akun baru berhasil sampai verifikasi OTP,"* Berada di halaman register
+* Inbox Yopmail dapat diakses",Positive,High,"nama: Dany QA | phone: nomor HP Indonesia dinamis | email: email dinamis | password: Password123!","1. Buka halaman /id-id/auth/register
+2. Isi nama depan, nama belakang, nomor HP, email, password, dan konfirmasi password
+3. Centang syarat & ketentuan
+4. Klik tombol submit
+5. Pada popup pilih ""Kirim OTP via Email"" lalu ""Lanjutkan""
+6. Ambil kode OTP dari inbox Yopmail lalu isikan
+7. Klik tombol ""Verifikasi""","Verifikasi OTP berhasil (status true) dan akun baru terdaftar",Will Automate
+Registrasi pengguna,Validasi data duplikat,TC-VOCA-REG-002,Desktop Web,Registrasi ditolak saat email atau nomor HP sudah terdaftar,"* Berada di halaman register",Negative,High,email: user_demo_voca@yopmail.com | phone: 081299998888,"1. Buka halaman /id-id/auth/register
+2. Isi seluruh field dengan data yang sudah terdaftar
+3. Centang syarat & ketentuan
+4. Klik tombol submit","Toast error tampil dengan pesan ""User sudah terdaftar. Silahkan coba menggunakan email atau nomor handphone lain""",Will Automate
+Registrasi pengguna,Validasi field wajib,TC-VOCA-REG-003,Desktop Web,Tombol submit nonaktif saat field wajib kosong,"* Berada di halaman register",Negative,Medium,"nama: Test User | phone: 081234567890 | email: (kosong) | password: Password123!","1. Buka halaman /id-id/auth/register
+2. Isi semua field kecuali email
+3. Centang syarat & ketentuan
+4. Periksa status tombol submit","Tombol submit dalam keadaan disabled sehingga tidak bisa diklik",Will Automate
+Transaksi top-up,Order dan riwayat,TC-VOCA-ORDER-001,Desktop Web,Order Free Fire berhasil dan nomor pesanan konsisten di History,"* Pengguna sudah login
+* Berada di halaman Free Fire",Positive,High,"user_id: 12345678 | email: dany.qa@yopmail.com | item: 5 Diamonds | pembayaran: QRIS","1. Buka halaman /id-id/free-fire
+2. Isi User ID dan email
+3. Pilih item 5 Diamonds
+4. Pilih metode pembayaran QRIS
+5. Klik tombol Beli
+6. Catat nomor pesanan yang tampil di halaman pembayaran
+7. Buka halaman /id-id/history dan klik pesanan terbaru
+8. Bandingkan nomor pesanan",Nomor pesanan pada halaman pembayaran sama dengan nomor pesanan yang tampil di History,Will Automate
+Lupa password,Reset password via OTP,TC-VOCA-FP-001,Desktop Web,Reset password berhasil melalui verifikasi OTP email,"* Akun dengan email terdaftar
+* Inbox Yopmail dapat diakses",Positive,High,"email: nuitrooo@yopmail.com | password baru: PasswordBaru123!","1. Buka halaman /id-id/auth/forgot-password
+2. Isi email terdaftar
+3. Klik tombol submit
+4. Pada popup pilih ""Kirim OTP via Email"" lalu ""Lanjutkan""
+5. Ambil kode OTP dari Yopmail lalu isikan
+6. Isi password baru dan konfirmasi password
+7. Klik tombol submit","Toast sukses tampil menandakan password berhasil direset",Will Automate

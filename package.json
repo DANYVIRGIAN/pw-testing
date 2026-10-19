@@ -12,6 +12,7 @@
     "dev": "tsx src/cli.ts",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
+    "typecheck:examples": "tsc -p examples/vocagame/tsconfig.json",
     "test:e2e": "playwright test",
     "demo": "tsx src/cli.ts examples/ui-testcases.sample.csv -o tests/generated"
   },

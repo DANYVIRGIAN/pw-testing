@@ -73,7 +73,7 @@ pw-testing/
 │   ├── parser.ts      # deteksi jenis + pemetaan ke TestCase
 │   ├── generator.ts   # penerbit kode spec Playwright
 │   └── types.ts       # model data
-├── examples/          # CSV contoh (UI & API)
+├── examples/          # CSV contoh (UI & API) + contoh nyata VocaGame
 ├── tests/             # spec hasil generate (gitignored)
 ├── playwright.config.ts
 └── package.json
@@ -91,6 +91,28 @@ BASE_URL=https://staging.example.com npm run test:e2e
 > Spec yang dihasilkan berupa **stub** dengan `test.fixme(...)` sampai kamu mengisi
 > langkah Playwright-nya. Ini sengaja: generator menyiapkan kerangka + konteks,
 > kamu fokus ke logika selektor/assertion.
+
+## 🧩 Contoh nyata: reverse-engineer VocaGame
+
+Folder [`examples/vocagame/`](./examples/vocagame) memperlihatkan seluruh alurnya pada
+kasus sungguhan: automation **Python + Selenium + Pytest** yang sudah ada dibalik menjadi
+**8 test case CSV**, di-generate jadi skeleton, lalu diisi memakai **Page Object Model**
+di Playwright.
+
+| Bagian | Isi |
+|---|---|
+| `vocagame-testcases.csv` | 8 test case hasil reverse-engineer (Login, Register, Order, Lupa Password) |
+| `generated/vocagame.spec.ts` | output generator pw-testing |
+| `pages/` + `utils/` | port POM & helper (OTP Yopmail) ke TypeScript |
+| `specs/vocagame.e2e.spec.ts` | spec siap jalan |
+
+```bash
+npx playwright install chromium
+npx playwright test -c examples/vocagame/playwright.config.ts
+```
+
+Detail lengkap + tabel pemetaan Selenium → Playwright ada di
+[`examples/vocagame/README.md`](./examples/vocagame/README.md).
 
 ## 🛠️ Pengembangan
 
