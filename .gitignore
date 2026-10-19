@@ -1,12 +1,6 @@
 # dependencies
 node_modules/
 
-# build output
-dist/
-
-# generated specs (regenerate with `npm run gen`)
-tests/generated/
-
 # playwright
 playwright-report/
 test-results/

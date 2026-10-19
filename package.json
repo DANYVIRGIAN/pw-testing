@@ -2,32 +2,29 @@
   "name": "pw-testing",
   "version": "0.1.0",
   "private": true,
-  "description": "Generate Playwright test specs from QA test-case CSV files (UI & API).",
+  "description": "Automation E2E untuk VocaGame dengan TypeScript + Playwright (port dari suite Python/Selenium).",
   "type": "module",
-  "bin": {
-    "tcgen": "./dist/cli.js"
-  },
   "scripts": {
-    "gen": "tsx src/cli.ts",
-    "dev": "tsx src/cli.ts",
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc --noEmit",
-    "typecheck:vocagame": "tsc -p vocagame/tsconfig.json",
-    "test:e2e": "playwright test",
-    "demo": "tsx src/cli.ts examples/ui-testcases.sample.csv -o tests/generated"
+    "test": "playwright test -c vocagame/playwright.config.ts",
+    "test:headed": "playwright test -c vocagame/playwright.config.ts --headed",
+    "test:ui": "playwright test -c vocagame/playwright.config.ts --ui",
+    "test:report": "playwright show-report",
+    "typecheck": "tsc -p vocagame/tsconfig.json",
+    "browsers:install": "playwright install chromium"
   },
   "keywords": [
     "playwright",
+    "typescript",
+    "automation",
+    "e2e",
     "qa",
-    "test-generation",
-    "test-case",
-    "automation"
+    "selenium-migration",
+    "vocagame"
   ],
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.64.1",
     "@types/node": "^26.6.5",
-    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
 }

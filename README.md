@@ -1,125 +1,114 @@
 # pw-testing
 
-> Generate **Playwright** test specs langsung dari file CSV test case QA — mendukung format **UI** dan **API**.
+Automation E2E untuk **[vocagame.com](https://vocagame.com)** — ditulis dengan
+**TypeScript + Playwright**.
 
-[![Node](https://img.shields.io/badge/node-%3E%3D18-informational)](https://nodejs.org)
-[![Playwright](https://img.shields.io/badge/playwright-%40playwright%2Ftest-2EAD33)](https://playwright.dev)
-[![TypeScript](https://img.shields.io/badge/typescript-strict-3178C6)](https://www.typescriptlang.org)
-
-`pw-testing` membaca CSV test case yang biasa dipakai tim QA (kolom `Test Case ID`,
-`Steps`, `Expected Result`, `Endpoint`, `Method`, dst.), lalu menghasilkan skeleton
-spec Playwright siap-isi. Tujuannya memangkas pekerjaan berulang: dari ratusan baris
-test case di spreadsheet → file `.spec.ts` terstruktur dalam hitungan detik.
+Proyek ini adalah **port** dari automation sebelumnya yang memakai **Python + Selenium + Pytest**
+([repo asal](https://github.com/DANYVIRGIAN/vocagame-automation-test)), lalu ditulis ulang
+ke stack modern.
 
 ---
 
-## ✨ Fitur
+## 🧪 Cakupan test (8 test case)
 
-- **Auto-deteksi jenis test case** — UI (`Steps`, `Platform`) vs API (`Endpoint`, `Method`, `Payload`).
-- **Parser CSV mandiri** — menangani field ber-quote, koma, newline di dalam sel, dan BOM. Tanpa dependensi.
-- **Context ikut terbawa** — Precondition, Test Data, Steps, Expected Result ditulis sebagai komentar di dalam test.
-- **Header case-insensitive & toleran** — beberapa nama kolom alternatif dikenali.
-- **Zero runtime dependency** — hanya tooling dev (TypeScript, tsx, Playwright).
+| ID | Test Case | Jenis |
+|---|---|---|
+| TC-VOCA-LOGIN-001 | Login berhasil (kredensial valid) | Positive |
+| TC-VOCA-LOGIN-002 | Login gagal — password salah | Negative |
+| TC-VOCA-LOGIN-003 | Login gagal — email tidak terdaftar | Negative |
+| TC-VOCA-REG-001 | Registrasi berhasil + verifikasi OTP | Positive |
+| TC-VOCA-REG-002 | Registrasi ditolak — data duplikat | Negative |
+| TC-VOCA-REG-003 | Tombol submit nonaktif saat email kosong | Negative |
+| TC-VOCA-ORDER-001 | Order Free Fire → nomor pesanan konsisten di History | Positive |
+| TC-VOCA-FP-001 | Reset password via OTP email | Positive |
 
-## 🚀 Quick start
+Rincian lengkap tiap test case (precondition, langkah, hasil yang diharapkan) ada di
+[`vocagame/vocagame-testcases.csv`](./vocagame/vocagame-testcases.csv).
+
+## ✨ Yang ditonjolkan
+
+- **Page Object Model** — pemisahan locator & aksi (`vocagame/pages/`) dari skenario (`vocagame/specs/`)
+- **Verifikasi OTP otomatis** — ambil kode dari inbox Yopmail lewat `frameLocator`, dengan retry
+- **Data uji dinamis** — email berbasis timestamp & nomor HP acak, agar tiap run tidak bentrok
+- **Kredensial lewat environment variable** — tidak ada akun tertulis di dalam kode
+- **Auto-waiting Playwright** — menggantikan `WebDriverWait` + `time.sleep()` di versi Selenium
+
+## 🗂️ Struktur
+
+```
+pw-testing/
+├── vocagame/
+│   ├── vocagame-testcases.csv      # dokumentasi 8 test case
+│   ├── config.ts                   # URL target + data uji (bisa ditimpa env)
+│   ├── pages/                      # Page Object Model
+│   │   ├── base.page.ts
+│   │   ├── login.page.ts
+│   │   ├── register.page.ts
+│   │   ├── order.page.ts
+│   │   └── forgot-password.page.ts
+│   ├── utils/
+│   │   ├── data.ts                 # email & nomor HP dinamis
+│   │   └── yopmail.ts              # pengambil OTP dari Yopmail
+│   ├── specs/
+│   │   └── vocagame.e2e.spec.ts    # 8 test siap jalan
+│   ├── playwright.config.ts
+│   └── tsconfig.json
+├── package.json
+└── README.md
+```
+
+## 🚀 Cara menjalankan
 
 ```bash
 # 1. install dependency
 npm install
 
-# 2. generate spec dari contoh (UI)
-npm run gen -- examples/ui-testcases.sample.csv
+# 2. install browser (sekali saja)
+npm run browsers:install
 
-# 3. generate spec dari contoh (API)
-npm run gen -- examples/api-testcases.sample.csv -o tests/api -n scan-receipt.spec.ts
+# 3. jalankan semua test
+npm test
+
+# menjalankan satu test saja
+npm test -- -g "LOGIN-001"
+
+# mode interaktif (UI mode)
+npm run test:ui
+
+# lihat laporan HTML terakhir
+npm run test:report
 ```
 
-Hasilnya muncul di `tests/generated/`. Buka salah satu file `.spec.ts`.
+## ⚙️ Konfigurasi & kredensial
 
-## 📦 Pemakaian CLI
+Kredensial akun uji **tidak ditulis di dalam kode** — ada default-nya, tapi bisa ditimpa
+lewat environment variable:
 
-```
-tcgen <testcase.csv> [options]
+| Env | Default | Keterangan |
+|---|---|---|
+| `VOCA_BASE_URL` | `https://vocagame.com` | Base URL target |
+| `VOCA_LOGIN_EMAIL` | `horegonuoihgc@gmail.com` | Akun untuk tes login |
+| `VOCA_FORGOT_EMAIL` | `nuitrooo@yopmail.com` | Akun untuk tes lupa password |
+| `VOCA_PASSWORD` | `Password123!` | Password akun uji |
+| `VOCA_USER_ID` | `12345678` | User ID Free Fire |
 
-  -o, --out <dir>     Folder output     (default: tests/generated)
-  -n, --name <file>   Nama file output  (default: <nama-csv>.spec.ts)
-  -h, --help          Bantuan
-```
-
-Setelah `npm run build`, CLI juga tersedia sebagai binary `tcgen`.
-
-## 📄 Format CSV yang didukung
-
-### UI test case
-
-| Kode US | Kode AC | Test Case ID | Platform | Title (Test Case) | Precondition | Category | Priority | Test Data | Steps | Expected Result | Automated ? |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-
-### API test case
-
-| Endpoint Name | TC ID | Method | Endpoint | TC Title | Precondition | Header & Auth | Payload | Test Data | Expected Result | Category | Priority | Automated? |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-
-> Kolom yang tidak ada cukup dibiarkan kosong. Nama kolom dibaca *case-insensitive*
-> dengan beberapa alias (mis. `Test Case ID` atau `TC ID`).
-
-## 🗂️ Struktur project
-
-```
-pw-testing/
-├── src/
-│   ├── cli.ts         # entry point CLI
-│   ├── csv.ts         # parser CSV (RFC-4180-ish)
-│   ├── parser.ts      # deteksi jenis + pemetaan ke TestCase
-│   ├── generator.ts   # penerbit kode spec Playwright
-│   └── types.ts       # model data
-├── examples/          # CSV contoh (UI & API) + contoh nyata VocaGame
-├── tests/             # spec hasil generate (gitignored)
-├── playwright.config.ts
-└── package.json
-```
-
-## 🧪 Menjalankan spec
+Contoh:
 
 ```bash
-# generate dulu, lalu:
-npm run test:e2e
-# atau arahkan ke baseURL tertentu:
-BASE_URL=https://staging.example.com npm run test:e2e
+VOCA_LOGIN_EMAIL=akun@kamu.com VOCA_PASSWORD=Rahasia123! npm test
 ```
 
-> Spec yang dihasilkan berupa **stub** dengan `test.fixme(...)` sampai kamu mengisi
-> langkah Playwright-nya. Ini sengaja: generator menyiapkan kerangka + konteks,
-> kamu fokus ke logika selektor/assertion.
+## 🔄 Pemetaan Selenium → Playwright
 
-## 🧩 VocaGame — automation hasil reverse-engineering
-
-Folder [`vocagame/`](./vocagame) berisi automation yang sudah berjalan, hasil membalik
-suite **Python + Selenium + Pytest** menjadi **TypeScript + Playwright**: automation lama
-diekstrak jadi **8 test case CSV**, di-generate jadi skeleton, lalu diisi memakai
-**Page Object Model**.
-
-| Bagian | Isi |
-|---|---|
-| `vocagame-testcases.csv` | 8 test case hasil reverse-engineer (Login, Register, Order, Lupa Password) |
-| `generated/vocagame.spec.ts` | output generator pw-testing |
-| `pages/` + `utils/` | port POM & helper (OTP Yopmail) ke TypeScript |
-| `specs/vocagame.e2e.spec.ts` | spec siap jalan |
-
-```bash
-npx playwright install chromium
-npx playwright test -c vocagame/playwright.config.ts
-```
-
-Detail lengkap + tabel pemetaan Selenium → Playwright ada di
-[`vocagame/README.md`](./vocagame/README.md).
-
-## 🛠️ Pengembangan
-
-```bash
-npm run typecheck   # tsc --noEmit
-npm run dev -- <csv>   # jalankan langsung via tsx
-```
+| Aspek | Python / Selenium | Playwright |
+|---|---|---|
+| Mencari elemen | `driver.find_element(By.XPATH, ...)` | `page.locator(...)` |
+| Menunggu | `WebDriverWait` + `time.sleep()` | auto-waiting bawaan |
+| Klik terhalang elemen lain | fallback `execute_script("arguments[0].click()")` | `scrollIntoViewIfNeeded()` + `click()` |
+| Elemen responsif (desktop/mobile) | loop cari elemen `is_displayed()` | pseudo-class `:visible` |
+| Buka tab baru | `driver.switch_to.new_window('tab')` | `context.newPage()` |
+| Masuk iframe email | `switch_to.frame("ifmail")` | `frameLocator('#ifmail')` |
+| Fixture browser | `conftest.py` (`@pytest.fixture`) | fixture bawaan `{ page }` |
 
 ## 📝 Lisensi
 
