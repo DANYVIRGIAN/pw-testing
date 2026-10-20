@@ -1,0 +1,33 @@
+name: CI
+
+# Cek cepat setiap push/PR: tidak menyentuh jaringan sama sekali,
+# jadi hasilnya selalu bisa dipercaya dan cepat selesai.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: Typecheck & daftar test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependency
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Daftar test (tanpa menjalankan)
+        run: npx playwright test -c vocagame/playwright.config.ts --list
